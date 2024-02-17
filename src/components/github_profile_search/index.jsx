@@ -1,47 +1,50 @@
 import {useEffect, useState} from "react";
+import User from "./user";
+import "./styles.css";
 
 const GithubProfileSearch = () => {
-    const [userName, setUserName] = useState("sangammukherjee");
+    const [userName, setUserName] = useState("tetyanago2023");
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const handleSubmit = () => {
-        console.log("username", userName);
-    }
 
-    const fetchGithubUserData = async () => {
-        setLoading(true)
-        const response = await fetch(`https://api.github.com/users/${userName}`);
-        const data = await response.json();
+    async function fetchGithubUserData() {
+        setLoading(true);
+        const res = await fetch(`https://api.github.com/users/${userName}`);
+
+        const data = await res.json();
         if (data) {
             setUserData(data);
             setLoading(false);
+            setUserName('')
         }
-        console.log("data", data);
+    }
 
+    function handleSubmit() {
+        fetchGithubUserData()
     }
 
     useEffect(() => {
         fetchGithubUserData();
-    }, [userName]);
+    }, []);
 
     if (loading) {
-        return <div>Loading...</div>
+        return <h1>Loading...</h1>;
     }
 
     return (
-        <div className={"github-profile-container"}>
-            <h1>Github Profile Search</h1>
-            <div className={"input-wrapper"}>
+        <div className="github-profile-container">
+            <div className="input-wrapper">
                 <input
                     name="search-by-username"
                     type="text"
                     placeholder="Enter GitHub username"
                     value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    onChange={(event) => setUserName(event.target.value)}
                 />
                 <button onClick={handleSubmit}>Search</button>
             </div>
+            {userData !== null ? <User user={userData} /> : null}
         </div>
-    )
+    );
 }
 export default GithubProfileSearch;
